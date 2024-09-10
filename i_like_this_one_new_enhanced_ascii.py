@@ -9,6 +9,12 @@ import colorsys
 
 ASCII_CHARS = ['@', '#', 'S', '%', '?', '*', '+', ';', ':', ',', '.', ' ']
 
+def testDevice(source):
+    cap = cv2.VideoCapture(source) 
+    if cap is None or not cap.isOpened():
+        return False
+    return True
+
 def resize_image(image, new_width=120):
     height, width = image.shape[:2]
     ratio = height / width
@@ -93,6 +99,14 @@ def apply_color_depth(surface, color, depth):
 def main():
     pygame.init()
 
+    camDevice = None
+    for cam in range(0,2):
+        if testDevice(cam):
+            camDevice = cam
+    if camDevice is None:
+        print("Error: Could not find video capture device.")
+        return
+
     width, height = 1200, 800
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Static ASCII Video with Audio-Reactive Effects")
@@ -100,7 +114,7 @@ def main():
     ascii_font = pygame.font.SysFont('courier', 7)
     info_font = pygame.font.SysFont('arial', 20)
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(camDevice)
     if not cap.isOpened():
         print("Error: Could not open video capture device.")
         return
